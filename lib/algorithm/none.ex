@@ -6,7 +6,7 @@ defmodule RateLimiter.Algorithm.None do
 
       # Client
 
-      def start_link(_opts) do
+      def start_link(_opts \\ []) do
         GenServer.start(__MODULE__, %{}, name: __MODULE__)
       end
 
@@ -17,7 +17,7 @@ defmodule RateLimiter.Algorithm.None do
       # Server
 
       @impl true
-      def init(_args) do
+      def init(_) do
         {:ok, %{}}
       end
 

@@ -1,15 +1,21 @@
 defmodule RateLimiter.Algorithm.SlidingWindow do
-  @doc false
   defmacro __using__(_) do
     quote do
       use GenServer
 
+      @default_window_size 120 * 1000
+      @default_window_max_request_count 60
       # Client
 
-      def start_link(_opts) do
+      def start_link(opts) do
+        window_size_ms = Keyword.get(opts, :window_size) || @default_window_size
+
+        window_max_request_count =
+          Keyword.get(opts, :window_max_request_count) || @default_window_max_request_count
+
         args = %{
-          window_size_ms: 6 * 1000,
-          window_max_request_count: 3
+          window_size_ms: window_size_ms,
+          window_max_request_count: window_max_request_count
         }
 
         GenServer.start(__MODULE__, args, name: __MODULE__)

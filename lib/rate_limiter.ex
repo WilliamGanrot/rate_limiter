@@ -1,8 +1,8 @@
-defmodule RateLimiter.Behavior do
-  @callback allowed_request(term()) :: term()
-  @callback disallowed_request(term()) :: term()
-  @optional_callbacks disallowed_request: 1
-end
+# defmodule RateLimiter.Behavior do
+#   @callback allowed_request(term()) :: term()
+#   @callback disallowed_request(term()) :: term()
+#   @optional_callbacks disallowed_request: 1
+# end
 
 defmodule RateLimiter do
   defmacro __using__(opts) do
