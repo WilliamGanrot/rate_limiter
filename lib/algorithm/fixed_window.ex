@@ -31,30 +31,8 @@ defmodule RateLimiter.Algorithm.FixedWindow do
       end
 
       @impl true
-      def handle_call({:ready?, delimiter_key, _opts}, _from, state) do
-        %{
-          fixed_window_registry: table,
-          window_size_ms: window_size_ms,
-          window_max_request_count: window_max_request_count
-        } = state
-
-        reply =
-          case :ets.lookup(table, delimiter_key) do
-            [] ->
-              new_window(table, delimiter_key)
-              true
-
-            [{delimiter_key, window_start, _}] when window_start + window_size_ms > now() ->
-              new_window(table, delimiter_key)
-              true
-
-            [{_, _, request_count} = row] when request_count <= window_max_request_count ->
-              update_table_row(table, {delimiter_key, now(), 0, request_count})
-              true
-
-            _ ->
-              false
-          end
+      def handle_call({:ready?, key, opts}, _from, state) do
+        reply = ready?(key, state, opts)
 
         {:reply, reply, state}
       end
@@ -75,15 +53,47 @@ defmodule RateLimiter.Algorithm.FixedWindow do
 
       # Private functions
 
-      defp new_window(table, delimiter_key) do
-        ets_row = {delimiter_key, now(), 1}
+      defp ready?(key, state, opts) do
+        %{
+          fixed_window_registry: table,
+          window_size_ms: window_size_ms,
+          window_max_request_count: window_max_request_count
+        } = state
+
+        now = now() |> IO.inspect(label: "now")
+        window_size_ms |> IO.inspect(label: "window size")
+
+        case :ets.lookup(table, key) |> IO.inspect() do
+          [] ->
+            new_window(key, state)
+            ready?(key, state, opts)
+
+          [{key, window_start, _}] when window_start + window_size_ms < now ->
+            new_window(key, state) |> IO.inspect(label: "window passed")
+            ready?(key, state, opts)
+
+          [{_, _, request_count} = row] when request_count < window_max_request_count ->
+            update_table_row(table, {key, now, request_count + 1})
+            true
+
+          _ ->
+            false
+        end
+      end
+
+      defp new_window(delimiter_key, state) do
+        %{
+          fixed_window_registry: table
+        } = state
+
+        ets_row = {delimiter_key, now(), 0}
         :ets.insert(table, ets_row)
       end
 
-      def update_table_row(
-            table,
-            {delimiter_key, _window_start, _current_count, _window_max_request_count} = row
-          ) do
+      defp update_table_row(
+             table,
+             {delimiter_key, _window_start, _current_count} = row
+           ) do
         :ets.insert(table, row)
         [row] = :ets.lookup(table, delimiter_key)
         row
