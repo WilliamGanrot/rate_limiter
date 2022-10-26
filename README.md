@@ -13,7 +13,7 @@ end
 defmodule MyApp.CallbackSender do
 
   def make_callback(agent_id, http_request) do
-    case MyApp.MyRateLimiter.ready?() do
+    case MyApp.MyRateLimiter.ready?(agent_id) do
       true ->
         # make http request
       false ->
