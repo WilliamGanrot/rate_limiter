@@ -11,9 +11,11 @@ end
 
 ```elixir
 defmodule MyApp.CallbackSender do
-
+  alias MyApp.MyRateLimiter
+  ....
+  
   def make_callback(agent_id, http_request) do
-    case MyApp.MyRateLimiter.ready?(agent_id) do
+    case MyRateLimiter.ready?(agent_id) do
       true ->
         # make http request
       false ->
