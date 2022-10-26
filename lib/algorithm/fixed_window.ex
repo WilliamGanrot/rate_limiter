@@ -60,16 +60,15 @@ defmodule RateLimiter.Algorithm.FixedWindow do
           window_max_request_count: window_max_request_count
         } = state
 
-        now = now() |> IO.inspect(label: "now")
-        window_size_ms |> IO.inspect(label: "window size")
+        now = now()
 
-        case :ets.lookup(table, key) |> IO.inspect() do
+        case :ets.lookup(table, key) do
           [] ->
             new_window(key, state)
             ready?(key, state, opts)
 
           [{key, window_start, _}] when window_start + window_size_ms < now ->
-            new_window(key, state) |> IO.inspect(label: "window passed")
+            new_window(key, state)
             ready?(key, state, opts)
 
           [{_, _, request_count} = row] when request_count < window_max_request_count ->
