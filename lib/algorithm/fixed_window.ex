@@ -25,8 +25,8 @@ defmodule RateLimiter.Algorithm.FixedWindow do
 
       @impl true
       def init(args) do
-        table = :ets.new(:fixed_window_registry, [:set, :protected])
-        state = args |> Map.put(:fixed_window_registry, table)
+        table = :ets.new(__MODULE__, [:set, :protected])
+        state = Map.put(args, :ets_table, table)
         {:ok, state}
       end
 
@@ -39,14 +39,14 @@ defmodule RateLimiter.Algorithm.FixedWindow do
 
       @impl true
       def handle_cast(:reset_all, state) do
-        %{fixed_window_registry: table} = state
+        %{ets_table: table} = state
         :ets.delete_all_objects(table)
         {:noreply, state}
       end
 
       @impl true
       def handle_cast({:reset, key}, state) do
-        %{fixed_window_registry: table} = state
+        %{ets_table: table} = state
         :ets.delete(table, key)
         {:noreply, state}
       end
@@ -55,7 +55,7 @@ defmodule RateLimiter.Algorithm.FixedWindow do
 
       defp ready?(key, state, opts) do
         %{
-          fixed_window_registry: table,
+          ets_table: table,
           window_size_ms: window_size_ms,
           window_max_request_count: window_max_request_count
         } = state
@@ -82,7 +82,7 @@ defmodule RateLimiter.Algorithm.FixedWindow do
 
       defp new_window(delimiter_key, state) do
         %{
-          fixed_window_registry: table
+          ets_table: table
         } = state
 
         ets_row = {delimiter_key, now(), 0}
