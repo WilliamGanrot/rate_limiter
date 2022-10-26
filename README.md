@@ -1,6 +1,31 @@
 # RateLimiter
 
-**TODO: Add description**
+## Usage
+
+```elixir
+defmodule MyApp.MyRateLimiter do
+  use RateLimiter, algorithm: :sliding_window
+end
+```
+
+
+```elixir
+defmodule MyApp.CallbackSender do
+
+  def make_callback(agent_id, http_request) do
+    case MyApp.MyRateLimiter.ready?(agent_id) do
+      true ->
+        # make http request
+      false ->
+        # take action on unready request
+        # for example put on queue och block
+    end
+  end
+
+end
+```
+
+
 
 ## Installation
 
@@ -14,6 +39,8 @@ def deps do
   ]
 end
 ```
+
+
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
