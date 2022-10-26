@@ -24,3 +24,5 @@ rate_limiter-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+/lib/test_modules/
