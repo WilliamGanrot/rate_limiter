@@ -11,6 +11,9 @@ defmodule RateLimiter do
         :sliding_window ->
           use RateLimiter.Algorithm.SlidingWindow
 
+        :fixed_window ->
+          use RateLimiter.Algorithm.FixedWindow
+
         :none ->
           use RateLimiter.Algorithm.None
       end
