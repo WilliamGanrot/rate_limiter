@@ -21,10 +21,6 @@ defmodule RateLimiter.Algorithm.FixedWindow do
         GenServer.start(__MODULE__, args, name: __MODULE__)
       end
 
-      def ready?(delimiter_key) do
-        GenServer.call(__MODULE__, {:ready?, delimiter_key})
-      end
-
       # Server
 
       @impl true

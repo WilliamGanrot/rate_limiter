@@ -17,6 +17,10 @@ defmodule RateLimiter do
         :none ->
           use RateLimiter.Algorithm.None
       end
+
+      def ready?(delimiter_key) do
+        GenServer.call(__MODULE__, {:ready?, delimiter_key})
+      end
     end
   end
 end

@@ -10,10 +10,6 @@ defmodule RateLimiter.Algorithm.None do
         GenServer.start(__MODULE__, %{}, name: __MODULE__)
       end
 
-      def ready?(delimiter_key) do
-        GenServer.call(__MODULE__, {:ready?, delimiter_key})
-      end
-
       # Server
 
       @impl true
