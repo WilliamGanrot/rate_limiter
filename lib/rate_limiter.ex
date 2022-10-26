@@ -10,6 +10,9 @@ defmodule RateLimiter do
 
         :none ->
           use RateLimiter.Algorithm.None
+
+        _ ->
+          use RateLimiter.Algorithm.None
       end
 
       def ready?(delimiter_key, opts \\ []) when is_list(opts) do
