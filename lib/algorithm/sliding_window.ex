@@ -25,15 +25,15 @@ defmodule RateLimiter.Algorithm.SlidingWindow do
 
       @impl true
       def init(args) do
-        table = :ets.new(:sliding_window_reqistry, [:set, :protected])
-        state = args |> Map.put(:sliding_window_reqistry, table)
+        table = :ets.new(:sliding_window_registry, [:set, :protected])
+        state = args |> Map.put(:sliding_window_registry, table)
         {:ok, state}
       end
 
       @impl true
-      def handle_call({:ready?, delimiter_key}, _from, state) do
+      def handle_call({:ready?, delimiter_key, opts}, _from, state) do
         %{
-          sliding_window_reqistry: table,
+          sliding_window_registry: table,
           window_size_ms: window_size_ms,
           window_max_request_count: window_max_request_count
         } = state
@@ -79,6 +79,20 @@ defmodule RateLimiter.Algorithm.SlidingWindow do
           end
 
         {:reply, reply, state}
+      end
+
+      @impl true
+      def handle_cast(:reset_all, state) do
+        %{sliding_window_registry: table} = state
+        :ets.delete_all_objects(table)
+        {:noreply, state}
+      end
+
+      @impl true
+      def handle_cast({:reset, key}, state) do
+        %{sliding_window_registry: table} = state
+        :ets.delete(table, key)
+        {:noreply, state}
       end
 
       def update_table_row(

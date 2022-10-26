@@ -18,8 +18,16 @@ defmodule RateLimiter do
           use RateLimiter.Algorithm.None
       end
 
-      def ready?(delimiter_key) do
-        GenServer.call(__MODULE__, {:ready?, delimiter_key})
+      def ready?(delimiter_key, opts \\ []) when is_list(opts) do
+        GenServer.call(__MODULE__, {:ready?, delimiter_key, opts})
+      end
+
+      def reset(key) do
+        GenServer.cast(__MODULE__, {:reset, key})
+      end
+
+      def reset_all() do
+        GenServer.cast(__MODULE__, :reset)
       end
     end
   end

@@ -18,8 +18,18 @@ defmodule RateLimiter.Algorithm.None do
       end
 
       @impl true
-      def handle_call({:ready?, delimiter_key}, _from, state) do
+      def handle_call({:ready?, _delimiter_key, _opts}, _from, state) do
         {:reply, :ok, state}
+      end
+
+      @impl true
+      def handle_cast(:reset_all, state) do
+        {:noreply, state}
+      end
+
+      @impl true
+      def handle_cast({:reset, _key}, state) do
+        {:noreply, state}
       end
     end
   end
