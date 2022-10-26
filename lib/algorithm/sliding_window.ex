@@ -7,7 +7,7 @@ defmodule RateLimiter.Algorithm.SlidingWindow do
       @default_window_max_request_count 60
       # Client
 
-      def start_link(opts) do
+      def start_link(opts \\ []) do
         window_size_ms = Keyword.get(opts, :window_size) || @default_window_size
 
         window_max_request_count =
